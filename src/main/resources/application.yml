@@ -1,0 +1,26 @@
+management:
+  endpoint:
+    health:
+      show-details: "ALWAYS"
+  endpoints:
+    web:
+      base-path: /
+      exposure:
+        include: health, metrics
+
+app:
+  processing:
+    concurrency: 100
+
+cache:
+  redis:
+    host: redis
+    port: 6379
+    user: ${REDIS_USER}
+    password: ${REDIS_USER_PASSWORD}
+
+queue:
+  beanstalk:
+    host: beanstalkd
+    port: 11300
+

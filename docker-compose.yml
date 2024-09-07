@@ -1,0 +1,90 @@
+version: '3.9'
+services:
+
+  redis:
+    image: redis:7.4
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_USER=${REDIS_USER}
+      - REDIS_USER_PASSWORD=${REDIS_USER_PASSWORD}
+    command: >
+      sh -c '
+        mkdir -p /usr/local/etc/redis &&
+        echo "bind 0.0.0.0" > /usr/local/etc/redis/redis.conf &&
+        echo "requirepass $REDIS_PASSWORD" >> /usr/local/etc/redis/redis.conf &&
+        echo "appendonly yes" >> /usr/local/etc/redis/redis.conf &&
+        echo "appendfsync everysec" >> /usr/local/etc/redis/redis.conf &&
+        echo "user default on nopass ~* +@all allchannels" > /usr/local/etc/redis/users.acl &&
+        echo "user $REDIS_USER on >$REDIS_USER_PASSWORD ~* +@all allchannels" >> /usr/local/etc/redis/users.acl &&
+        redis-server /usr/local/etc/redis/redis.conf --aclfile /usr/local/etc/redis/users.acl
+      '
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "$REDIS_PASSWORD", "ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 20
+    ports:
+      - 6379:6379
+    volumes:
+      - redis_data:/data
+    networks:
+      - backend
+
+  redis_insight:
+    image: redis/redisinsight:latest
+    depends_on:
+      redis:
+        condition: service_healthy
+    ports:
+      - 5540:5540
+    volumes:
+      - redis_insight_data:/db
+    networks:
+      - backend
+
+  beanstalkd:
+    build:
+      context: ./beanstalkd
+      dockerfile: Dockerfile
+    environment:
+      - BEANSTALKD_VERBOSE=1
+    healthcheck:
+      test: echo -e "stats\r\n" | nc 127.0.0.1 11300 || exit 1
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    ports:
+      - 11300:11300
+    volumes:
+      - beanstalkd_data:/var/cache/beanstalkd
+    networks:
+      - backend
+
+  hsa-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - REDIS_USER=${REDIS_USER}
+      - REDIS_USER_PASSWORD=${REDIS_USER_PASSWORD}
+      - JDK_JAVA_OPTIONS=
+        -Xms1g
+        -Xmx2g
+    ports:
+      - 8080:8080
+    depends_on:
+      redis:
+        condition: service_healthy
+      beanstalkd:
+        condition: service_healthy
+    networks:
+      - backend
+
+volumes:
+  redis_data:
+  redis_insight_data:
+  beanstalkd_data:
+
+networks:
+  backend:
+    driver: bridge

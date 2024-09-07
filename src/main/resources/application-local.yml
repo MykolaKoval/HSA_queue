@@ -1,0 +1,9 @@
+cache:
+  redis:
+    host: localhost
+    user: user
+    password: secret
+
+queue:
+  beanstalk:
+    host: localhost
