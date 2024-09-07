@@ -39,13 +39,14 @@ Publish and consume
 POST http://localhost:8080/api/beanstalk/publish-async?qty=1000000
 POST http://localhost:8080/api/beanstalk/subscribe?notifyQty=1000000
 ```
-| Message (qty) | Publish time (sec) | Publish throughput (msg/sec) | Consume time (sec) | Consume throughput (msg/sec) |
-|---------------|--------------------|------------------------------|--------------------|------------------------------|
-| 10000         | 0.23               | 43478                        | 1.30               | 7692                         |
-| 100000        | 2.97               | 33670                        | 8.08               | 12376                        |
-| 1000000       | 24                 | 41666                        | 76.67              | 13042                        |
+| Messages (qty) | Publish time (sec) | Publish throughput (msg/sec) | Consume time (sec) | Consume throughput (msg/sec) |
+|----------------|--------------------|------------------------------|--------------------|------------------------------|
+| 10000          | 0.23               | 43478                        | 1.30               | 7692                         |
+| 100000         | 2.97               | 33670                        | 8.08               | 12376                        |
+| 1000000        | 24                 | 41666                        | 76.67              | 13042                        |
 
 <h4>2. Redis (AOF, fsync = everysec)</h4>
+
 ```
 appendonly yes
 appendfsync everysec
@@ -55,35 +56,37 @@ Publish and consume
 POST http://localhost:8080/api/redis/publish-async?qty=1000000
 POST http://localhost:8080/api/redis/subscribe?notifyQty=1000000
 ```
-| Message (qty) | Publish time (sec) | Publish throughput (msg/sec) | Consume time (sec) | Consume throughput (msg/sec) |
-|---------------|--------------------|------------------------------|--------------------|------------------------------|
-| 10000         | 0.77               | 12987                        | 0.77               | 12987                        |
-| 100000        | 4.76               | 21008                        | 4.76               | 21008                        |
-| 1000000       | 70.3               | 14225                        | 70.3               | 14225                        |
+| Messages (qty) | Publish time (sec) | Publish throughput (msg/sec) | Consume time (sec) | Consume throughput (msg/sec) |
+|----------------|--------------------|------------------------------|--------------------|------------------------------|
+| 10000          | 0.77               | 12987                        | 0.77               | 12987                        |
+| 100000         | 4.76               | 21008                        | 4.76               | 21008                        |
+| 1000000        | 70.3               | 14225                        | 70.3               | 14225                        |
 
 <h4>3. Redis (AOF, fsync = no)</h4>
+
 ```
 appendonly yes
 appendfsync no
 ```
-| Message (qty) | Publish time (sec) | Publish throughput (msg/sec) | Consume time (sec) | Consume throughput (msg/sec) |
-|---------------|--------------------|------------------------------|--------------------|------------------------------|
-| 10000         | 0.75               | 13333                        | 0.75     b         | 13333                        |
-| 100000        | 4.75               | 21052                        | 4.75               | 21052                        |
-| 1000000       | 67.7               | 14771                        | 67.7               | 14771                        |
+| Messages (qty) | Publish time (sec) | Publish throughput (msg/sec) | Consume time (sec) | Consume throughput (msg/sec) |
+|----------------|--------------------|------------------------------|--------------------|------------------------------|
+| 10000          | 0.75               | 13333                        | 0.75     b         | 13333                        |
+| 100000         | 4.75               | 21052                        | 4.75               | 21052                        |
+| 1000000        | 67.7               | 14771                        | 67.7               | 14771                        |
 
 <h4>4. Redis (RDB)</h4>
+
 ```
 appendonly no
 rdbcompression yes
 rdbchecksum yes
 dbfilename dump.rdb
 ```
-| Message (qty) | Publish time (sec) | Publish throughput (msg/sec) | Consume time (sec) | Consume throughput (msg/sec) |
-|---------------|--------------------|------------------------------|--------------------|------------------------------|
-| 10000         | 0.75               | 13333                        | 0.75     b         | 13333                        |
-| 100000        | 4.75               | 21052                        | 4.75               | 21052                        |
-| 1000000       | 68.7               | 14556                        | 68.7               | 14556                        |
+| Messages (qty) | Publish time (sec) | Publish throughput (msg/sec) | Consume time (sec) | Consume throughput (msg/sec) |
+|----------------|--------------------|------------------------------|--------------------|------------------------------|
+| 10000          | 0.75               | 13333                        | 0.75     b         | 13333                        |
+| 100000         | 4.75               | 21052                        | 4.75               | 21052                        |
+| 1000000        | 68.7               | 14556                        | 68.7               | 14556                        |
 
 <h4>5. Redis FIFO queue</h4>
 
@@ -92,11 +95,11 @@ Enqueue and dequeue
 POST http://localhost:8080/api/redis/enqueue-async?qty=1000000
 POST http://localhost:8080/api/redis/dequeue?notifyQty=1000000
 ```
-| Message (qty) | Publish time (sec) | Publish throughput (msg/sec) | Consume time (sec) | Consume throughput (msg/sec) |
-|---------------|--------------------|------------------------------|--------------------|------------------------------|
-| 10000         | 0.39               | 25641                        | 0.33               | 30303                        |
-| 100000        | 4.40               | 22727                        | 3.16               | 31645                        |
-| 1000000       | 36                 | 27777                        | 34.5               | 28985                        |
+| Messages (qty) | Publish time (sec) | Publish throughput (msg/sec) | Consume time (sec) | Consume throughput (msg/sec) |
+|----------------|--------------------|------------------------------|--------------------|------------------------------|
+| 10000          | 0.39               | 25641                        | 0.33               | 30303                        |
+| 100000         | 4.40               | 22727                        | 3.16               | 31645                        |
+| 1000000        | 36                 | 27777                        | 34.5               | 28985                        |
 
 Conclusions:
 
